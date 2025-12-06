@@ -24,13 +24,13 @@ class LectureService:
         self,
         *,
         db: Session,
-        groq_api_key: Optional[str] = None,
+        GROQ_API_KEY: Optional[str] = None,
     ) -> None:
         settings = get_settings()
 
         inferred_api_key = (
-            groq_api_key
-            or getattr(settings, "groq_api_key", None)
+            GROQ_API_KEY
+            or getattr(settings, "GROQ_API_KEY", None)
             or settings.dict().get("GROQ_API_KEY")
         )
         # Use absolute path for storage to ensure consistency regardless of working directory
