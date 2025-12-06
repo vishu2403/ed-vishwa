@@ -18,21 +18,16 @@ RUN apt-get update && \
         poppler-utils \
         tesseract-ocr \
         tesseract-ocr-eng \
+        tesseract-ocr-hin \
+        tesseract-ocr-guj \
         ghostscript \
         ffmpeg \
-        curl \
-        ca-certificates && \
-    mkdir -p /usr/share/tesseract-ocr/5/tessdata/ && \
-    curl -L -o /usr/share/tesseract-ocr/5/tessdata/hin.traineddata \
-        https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/main/hin.traineddata && \
-    curl -L -o /usr/share/tesseract-ocr/5/tessdata/guj.traineddata \
-        https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/main/guj.traineddata && \
-    pip install --upgrade pip && \
-    pip install -r requirements.txt && \
-    pip install pytesseract ocrmypdf pydub edge-tts --upgrade && \
-    apt-get purge -y build-essential libpq-dev curl && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+    && pip install --upgrade pip \
+    && pip install -r requirements.txt \
+    && pip install pytesseract ocrmypdf pydub edge-tts --upgrade \
+    && apt-get purge -y build-essential \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy the backend code
 COPY backend ./backend
