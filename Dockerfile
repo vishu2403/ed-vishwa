@@ -2,16 +2,15 @@ FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PYTHONPATH=/app/backend
+    PYTHONPATH=/app/backend:$PYTHONPATH \
+    TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
 
 WORKDIR /app
 
-# Copy only requirements first for Docker cache
+# Copy only requirements first to leverage Docker layer cache
 COPY backend/requirements.txt ./requirements.txt
 
-# Install system dependencies (OCR, PDF, Audio)
-# Debian 12 (Bookworm) provides Tesseract 5.
-# We install language packs directly via apt to avoid version mismatches and manual download errors.
+# Install system dependencies: Tesseract, Ghostscript, ffmpeg, etc.
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
         build-essential \
@@ -19,18 +18,23 @@ RUN apt-get update && \
         poppler-utils \
         tesseract-ocr \
         tesseract-ocr-eng \
-        tesseract-ocr-hin \
-        tesseract-ocr-guj \
         ghostscript \
         ffmpeg \
+        curl \
         ca-certificates && \
+    mkdir -p /usr/share/tesseract-ocr/5/tessdata/ && \
+    curl -L -o /usr/share/tesseract-ocr/5/tessdata/hin.traineddata \
+        https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/main/hin.traineddata && \
+    curl -L -o /usr/share/tesseract-ocr/5/tessdata/guj.traineddata \
+        https://raw.githubusercontent.com/tesseract-ocr/tessdata_best/main/guj.traineddata && \
     pip install --upgrade pip && \
     pip install -r requirements.txt && \
-    apt-get purge -y build-essential && \
+    pip install pytesseract ocrmypdf pydub edge-tts --upgrade && \
+    apt-get purge -y build-essential libpq-dev curl && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy backend source
+# Copy the backend code
 COPY backend ./backend
 
 EXPOSE 8000
