@@ -20,11 +20,11 @@ def _normalize_database_url(raw_url) -> str:
         # Handle string URLs
         url_str = str(raw_url)
         
-    # Ensure we're using psycopg2 driver
+    # Ensure we're using psycopg driver (v3)
     if url_str.startswith("postgresql://"):
-        return "postgresql+psycopg2://" + url_str[len("postgresql://"):]
+        return "postgresql+psycopg://" + url_str[len("postgresql://"):]
     if url_str.startswith("postgres://"):
-        return "postgresql+psycopg2://" + url_str[len("postgres://"):]
+        return "postgresql+psycopg://" + url_str[len("postgres://"):]
     return url_str
 
 

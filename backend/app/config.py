@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     
     # Database Configuration
     database_url: PostgresDsn = Field(
-        "postgresql+psycopg2://postgres:postgres@localhost:5432/inai", 
+        "postgresql+psycopg://postgres:postgres@localhost:5432/inai", 
         env="DATABASE_URL"
     )
     database_pool_size: int = Field(20, env="DATABASE_POOL_SIZE")
@@ -52,7 +52,7 @@ class Settings(BaseSettings):
     @validator("database_url", pre=True)
     def assemble_db_connection(cls, v: str | PostgresDsn) -> str | PostgresDsn:
         if isinstance(v, str) and v.startswith("postgres://"):
-            return v.replace("postgres://", "postgresql+psycopg2://", 1)
+            return v.replace("postgres://", "postgresql+psycopg://", 1)
         return v
     
     @validator("cors_origins", pre=True)
