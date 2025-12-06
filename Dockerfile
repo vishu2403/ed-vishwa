@@ -3,7 +3,7 @@ FROM python:3.11-slim
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PYTHONPATH=/app/backend:$PYTHONPATH \
-    TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+    TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
 
 WORKDIR /app
 
@@ -19,13 +19,20 @@ RUN apt-get update && \
         tesseract-ocr \
         tesseract-ocr-eng \
         tesseract-ocr-hin \
-        tesseract-ocr-guj \
         ghostscript \
         ffmpeg \
+        wget \
+        ca-certificates \
+    # Gujarati traineddata manually add karo
+    && mkdir -p /usr/share/tesseract-ocr/4.00/tessdata && \
+    wget -O /usr/share/tesseract-ocr/4.00/tessdata/guj.traineddata \
+        https://github.com/tesseract-ocr/tessdata/raw/main/guj.traineddata \
+    # Python deps
     && pip install --upgrade pip \
     && pip install -r requirements.txt \
     && pip install pytesseract ocrmypdf pydub edge-tts --upgrade \
-    && apt-get purge -y build-essential \
+    # Clean up to keep image small
+    && apt-get purge -y build-essential wget \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
