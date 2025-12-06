@@ -30,7 +30,8 @@ class LectureService:
 
         inferred_api_key = (
             GROQ_API_KEY
-            or getattr(settings, "GROQ_API_KEY", None)
+            or getattr(settings, "groq_api_key", None)
+            or settings.dict().get("groq_api_key")
             or settings.dict().get("GROQ_API_KEY")
         )
         # Use absolute path for storage to ensure consistency regardless of working directory

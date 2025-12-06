@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     
     # API Settings
     api_v1_prefix: str = "/api/v1"
+    groq_api_key: Optional[str] = Field(None, env="GROQ_API_KEY")
     
     # File Uploads
     max_upload_size: int = 10 * 1024 * 1024  # 10MB
@@ -86,7 +87,7 @@ class Settings(BaseSettings):
         description="Base URL (e.g., https://example.com) used when constructing absolute media links",
     )
     model_config = SettingsConfigDict(
-        env_file="opt/app/env.production",
+        env_file="/opt/app/env.production",
         env_file_encoding="utf-8",
         extra="allow",
     )
