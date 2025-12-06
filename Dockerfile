@@ -2,36 +2,20 @@ FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PYTHONPATH=/app/backend \
-    TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
+    PYTHONPATH=/app/backend:$PYTHONPATH
 
 WORKDIR /app
 
-# Copy only requirements first to leverage Docker layer cache
 COPY backend/requirements.txt ./requirements.txt
 
-# System deps + Tesseract + tessdata
-# Debian 12 (Bookworm) includes Tesseract 5.3.0
-RUN set -eux; \
-    apt-get update; \
-    apt-get install --no-install-recommends -y \
-        build-essential \
-        libpq-dev \
-        poppler-utils \
-        tesseract-ocr \
-        tesseract-ocr-eng \
-        tesseract-ocr-hin \
-        tesseract-ocr-guj \
-        ghostscript \
-        ffmpeg \
-        ca-certificates; \
-    pip install --upgrade pip; \
-    pip install -r requirements.txt; \
-    apt-get purge -y build-essential; \
-    apt-get autoremove -y; \
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y build-essential libpq-dev poppler-utils tesseract-ocr && \
+    pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    apt-get purge -y build-essential && \
+    apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy the backend code
 COPY backend ./backend
 
 EXPOSE 8000
