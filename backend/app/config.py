@@ -86,7 +86,7 @@ class Settings(BaseSettings):
         description="Base URL (e.g., https://example.com) used when constructing absolute media links",
     )
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file="/opt/app/env.production",
         env_file_encoding="utf-8",
         extra="allow",
     )
