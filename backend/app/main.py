@@ -35,9 +35,18 @@ def create_app() -> FastAPI:
     app = FastAPI(title=settings.app_name)
 
     allow_all_origins = settings.cors_origins == ["*"]
+
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"] if allow_all_origins else settings.cors_origins,
+        allow_origins=(
+            [
+                "https://staticfile-59dce.wasmer.app",
+                "https://edinai.inaiverse.com",
+                "https://api.edinai.inaiverse.com",
+            ]
+            if allow_all_origins
+            else settings.cors_origins
+        ),
         allow_credentials=not allow_all_origins,
         allow_methods=["*"],
         allow_headers=["*"],
