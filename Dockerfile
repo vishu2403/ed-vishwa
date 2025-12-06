@@ -2,8 +2,8 @@ FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PYTHONPATH=/app/backend:$PYTHONPATH \
-    TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
+    PYTHONPATH=/app/backend \
+    TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
 
 WORKDIR /app
 
@@ -11,6 +11,7 @@ WORKDIR /app
 COPY backend/requirements.txt ./requirements.txt
 
 # System deps + Tesseract + tessdata
+# Debian 12 (Bookworm) includes Tesseract 5.3.0
 RUN set -eux; \
     apt-get update; \
     apt-get install --no-install-recommends -y \
@@ -18,21 +19,14 @@ RUN set -eux; \
         libpq-dev \
         poppler-utils \
         tesseract-ocr \
+        tesseract-ocr-eng \
+        tesseract-ocr-hin \
+        tesseract-ocr-guj \
         ghostscript \
         ffmpeg \
-        curl \
         ca-certificates; \
-    mkdir -p /usr/share/tesseract-ocr/4.00/tessdata; \
-    # English, Hindi, Gujarati traineddata
-    curl -L https://raw.githubusercontent.com/tesseract-ocr/tessdata/main/eng.traineddata \
-      -o /usr/share/tesseract-ocr/4.00/tessdata/eng.traineddata; \
-    curl -L https://raw.githubusercontent.com/tesseract-ocr/tessdata/main/hin.traineddata \
-      -o /usr/share/tesseract-ocr/4.00/tessdata/hin.traineddata; \
-    curl -L https://raw.githubusercontent.com/tesseract-ocr/tessdata/main/guj.traineddata \
-      -o /usr/share/tesseract-ocr/4.00/tessdata/guj.traineddata; \
     pip install --upgrade pip; \
     pip install -r requirements.txt; \
-    pip install pytesseract ocrmypdf pydub edge-tts --upgrade; \
     apt-get purge -y build-essential; \
     apt-get autoremove -y; \
     rm -rf /var/lib/apt/lists/*
